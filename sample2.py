@@ -45,3 +45,7 @@ def format(msgs):
                 result['Comment'] = comment
                 response.append(result)
     return response
+
+details = fetch_emails(imapUserEmail= 'saravanan@vrdella.com',imapPassword = 'vwxz bznq xbgl xcsl')
+client = format(details)
+print(client)
