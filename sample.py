@@ -4,7 +4,6 @@ from datetime import datetime
 import html2text
 
 
-# hi
 def fetch_emails(imapUserEmail, imapPassword):
     imapHostServer = 'imap.gmail.com'
     imapVar = imp.IMAP4_SSL(imapHostServer)
