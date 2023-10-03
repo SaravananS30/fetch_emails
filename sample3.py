@@ -3,7 +3,6 @@ import imaplib as imp
 import email
 from datetime import datetime
 import html2text
-#hi
 
 conn = mysql.connector.connect(
     host="127.0.0.1",
