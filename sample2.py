@@ -12,8 +12,8 @@ def fetch_emails(imapUserEmail, imapPassword):
     imapVar = imp.IMAP4_SSL(imapHostServer)
     imapVar.login(imapUserEmail, imapPassword)
     imapVar.select('alabama')
-    #     result, data = imapVar.uid('search', None, '(UNSEEN)')
-    result, data = imapVar.uid('search', "FROM", "jobs_della@vrdella.com")
+    result, data = imapVar.uid('search', None, '(UNSEEN)')
+    # result, data = imapVar.uid('search', "FROM", "jobs_della@vrdella.com")
     inbox_item_list = data[0].split()
     for item in inbox_item_list:
         result, email_data = imapVar.uid('fetch', item, '(RFC822)')
