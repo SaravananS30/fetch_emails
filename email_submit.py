@@ -2,6 +2,7 @@ import imaplib as imp
 import email
 from datetime import datetime
 import html2text
+import mysql.connector
 
 
 def fetch_emails(imapUserEmail, imapPassword):
@@ -53,6 +54,10 @@ def fetch_emails(imapUserEmail, imapPassword):
                     value = plain_text_content.split("Business Unit")[1].strip('\n')
                     value = value.strip().split('\n')[0].rstrip()
                     formated_result["business_unit"] = value
+                if "Business Unit Code" in plain_text_content:
+                    value = plain_text_content.split("Business Unit Code")[1].strip('\n')
+                    value = value.strip().split('\n')[0].rstrip()
+                    formated_result['business_unit_code'] = value
                 if "Pay Rate:" in plain_text_content:
                     value = plain_text_content.split("Pay Rate:")[1].strip('\n')
                     value = value.strip().split('\n')[0].rstrip()
@@ -103,53 +108,54 @@ def fetch_emails(imapUserEmail, imapPassword):
     return email_list
 
 
-details = fetch_emails(imapUserEmail='saravanan@vrdella.com', imapPassword='vwxz bznq xbgl xcsl')
-print(details)
+def database(email_list):
+    # Connect to your MySQL database
+    conn = mysql.connector.connect(
+        host="127.0.0.1",
+        user="root",
+        password="Vrdella!6",
+        database="mail",
 
-import mysql.connector
-
-# Connect to your MySQL database
-conn = mysql.connector.connect(
-    host="127.0.0.1",
-    user="root",
-    password="Vrdella!6",
-    database="task",
-
-)
-
-# Create a cursor object to execute SQL queries
-cursor = conn.cursor()
-
-# Loop through the JSON response and insert each record into the MySQL table
-
-sql = """
-    INSERT INTO email_fetch (clientjobid, job_title, location, job_start_date, job_end_date, business_unit, job_bill_rate, job_description, status, client)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
-
-values = []
-for record in details:
-    values.append(
-        (
-            record["clientjobid"],
-            record["job_title"],
-            record["location"],
-            str(record["job_start_date"]),
-            str(record["job_end_date"]),
-            record["business_unit"],
-            record["job_bill_rate"],
-            record["job_description"],
-            record["status"],
-            record["client"]
-        )
     )
-print(values)
-# Execute the SQL INSERT statement with executemany
-cursor.executemany(sql, values)
 
-# Commit the changes to the database
-conn.commit()
+    # Create a cursor object to execute SQL queries
+    cursor = conn.cursor()
 
-# Close the cursor and database connection
-cursor.close()
-conn.close()
+    # Loop through the JSON response and insert each record into the MySQL table
+
+    sql = """
+        INSERT INTO email (clientjobid, job_title, location, job_start_date, job_end_date, business_unit, job_bill_rate, job_description, status, client, business_unit_code)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+    values = []
+    for record in details:
+        values.append(
+            (
+                record["clientjobid"],
+                record["job_title"],
+                record["location"],
+                str(record["job_start_date"]),
+                str(record["job_end_date"]),
+                record["business_unit"],
+                record["job_bill_rate"],
+                record["job_description"],
+                record["status"],
+                record["client"],
+                record['business_unit_code']
+            )
+        )
+    print(values)
+    # Execute the SQL INSERT statement with executemany
+    cursor.executemany(sql, values)
+
+    # Commit the changes to the database
+    conn.commit()
+
+    # Close the cursor and database connection
+    cursor.close()
+    conn.close()
+
+
+details = fetch_emails(imapUserEmail='saravanan@vrdella.com', imapPassword='vwxz bznq xbgl xcsl')
+database(details)
